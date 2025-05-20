@@ -1,0 +1,18 @@
+# control/Dockerfile
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY  full_app/ /ansible/full_app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3-pip \
+        openssh-client \
+        git \
+        sshpass && \
+    pip install --no-cache-dir "ansible-core==2.16.*" paramiko && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /ansible/inventory
+CMD ["/bin/bash"]

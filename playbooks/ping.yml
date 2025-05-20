@@ -1,0 +1,7 @@
+---
+- name: Quick Connectivity Check
+  hosts: NAT
+  gather_facts: false
+  tasks:
+    - name: Ping every node
+      ansible.builtin.ping:

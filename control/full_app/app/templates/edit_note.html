@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Note - Flask Notes{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>Edit Note</h2>
+        <form method="POST" action="{{ url_for('main.edit_note', note_id=note.id) }}">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" value="{{ note.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea id="content" name="content" rows="10" required>{{ note.content }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Note</button>
+            <a href="{{ url_for('main.notes') }}" class="btn">Cancel</a>
+        </form>
+    </div>
+{% endblock %}

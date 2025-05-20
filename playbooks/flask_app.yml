@@ -1,0 +1,60 @@
+---
+- name: Deploy Flask application to worker nodes
+  hosts: all
+  become: true
+
+  vars:
+    app_user: full_app
+    app_dir: /ansible/full_app
+    service_name: full_app
+    app_port: 5000
+
+  tasks:
+    - name: Ensure the application user exists
+      user:
+        name: "{{ app_user }}"
+        home: "{{ app_dir }}"
+        create_home: yes
+
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0755'
+
+    - name: Copy application source code to target machine
+      copy:
+        src: /ansible/full_app/
+        dest: "{{ app_dir }}/"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0755'
+
+    - name: Install Python and pip
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Install Flask dependencies
+      pip:
+        requirements: "{{ app_dir }}/requirements.txt"
+        executable: pip3
+
+
+    - name: Run Flask app in the background
+      shell: "nohup python3 run.py > output.log 2>&1 &"
+      args:
+        chdir: "{{ app_dir }}"
+      async: 0
+      poll: 0
+
+    - name: Wait for the Flask app to respond
+      uri:
+        url: "http://localhost:{{ app_port }}"
+        status_code: 200
+        timeout: 10

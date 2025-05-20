@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  control:
+    build: ./control
+    container_name: ansible-control
+    volumes:
+      - ./inventory:/ansible/inventory:ro      # read-only inventory
+      - ./playbooks:/ansible/playbooks         # <-- shared playbooks folder
+    networks:
+      ansible_net:
+        aliases: [control]
+    tty: true
+    command: ansible-playbook ../playbooks/flask_app.yml
+
+
+  node1: &worker
+    build: ./worker
+    container_name: node1
+    networks: { ansible_net: { aliases: [node1] } }
+    ports:
+      - "8552:5000"
+  node2:
+    <<: *worker
+    container_name: node2
+    networks: { ansible_net: { aliases: [node2] } }
+    ports:
+      - "8551:5000"
+
+  node3:
+    <<: *worker
+    container_name: node3
+    networks: { ansible_net: { aliases: [node3] } }
+    ports:
+      - "8554:5000"
+  node4:
+    <<: *worker
+    container_name: node4
+    networks: { ansible_net: { aliases: [node4] } }
+    ports:
+      - "8555:5000"
+
+networks:
+  ansible_net:
+    driver: bridge

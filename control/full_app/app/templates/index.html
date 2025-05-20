@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card">
+        <h1>Welcome to Flask Notes</h1>
+        <p>A simple application for creating and managing your notes.</p>
+        
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.notes') }}" class="btn btn-primary">View Your Notes</a>
+        {% else %}
+            <p>Please login or register to start managing your notes.</p>
+            <a href="{{ url_for('main.login') }}" class="btn btn-primary">Login</a>
+            <a href="{{ url_for('main.register') }}" class="btn btn-primary">Register</a>
+        {% endif %}
+    </div>
+{% endblock %}
